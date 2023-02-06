@@ -1,0 +1,17 @@
+# DOCS
+# https://containrrr.dev/watchtower/
+# Notifications https://containrrr.dev/shoutrrr/v0.6/services/overview/ 
+version: "3"
+services:
+  watchtower:
+    container_name: watchtower
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    image: containrrr/watchtower:latest
+    volumes:
+      - /etc/timezone:/etc/timezone:ro                        # Timezone
+      - /var/run/docker.sock:/var/run/docker.sock:ro          # Docker
+      - /datalevy/watchtower/data/config.json:/config.json    # Config file
+    env_file:
+      - /datalevy/watchtower/watchtower.env
