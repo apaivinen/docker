@@ -1,0 +1,4 @@
+# Ignore every .env file
+*.env
+# Except file names ending with -EXAMPLE
+!*-EXAMPLE.env
