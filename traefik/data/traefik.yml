@@ -1,0 +1,87 @@
+# Base file from: https://github.com/ChristianLempa/boilerplates/blob/main/docker-compose/traefik/config/traefik.yml
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false # true by default
+
+# (Optional) Logging
+# ---
+log:
+  level: ERROR  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: common  # common, json, logfmt
+  filePath: /var/log/traefik.log
+
+# (Optional) Accesslog
+# ---
+#accessLog:
+#  format: common  # common, json, logfmt
+#  filePath: /var/log/traefik/access.log
+#  filters:
+#    statusCodes: # Remove filters for debugging
+#      - "400-451" # Client errors. NOTE: Every time you load the page as unauthenticated you'll #generate 401
+#      - "500-511" # Server Errors
+#    retryAttempts: true
+#    minDuration: "10ms"
+
+# (Optional) Enable API and Dashboard
+# ---
+api:
+  dashboard: true  # true by default
+  debug: true
+
+# Entry Points configuration
+# ---
+entryPoints:
+  http:
+    address: :80
+    # (Optional) Redirect to HTTPS
+    # ---
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+
+  https:
+    address: :443
+
+# Allow insecure certificates sit between cloudflare & local domain
+# This allows to put reverse proxy with SSL in front of another server that have self signed sertificate (like proxmox)
+# ---
+serversTransport:
+  insecureSkipVerify: true
+
+# Configure your CertificateResolver here...
+# Using dnsChallenge
+# ---
+certificatesResolvers:
+   cloudflare:
+    acme:
+      email: YourEmailHere
+      storage: /etc/traefik/ssl/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        #disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+
+# (Optional) Overwrite Default Certificates
+# tls:
+#   stores:
+#     default:
+#       defaultCertificate:
+#         certFile: /etc/traefik/certs/cert.pem
+#         keyFile: /etc/traefik/certs/cert-key.pem
+# (Optional) Disable TLS version 1.0 and 1.1
+#   options:
+#     default:
+#       minVersion: VersionTLS12
+
+providers:
+  docker:
+    exposedByDefault: false  # Default is true
+    endpoint: "unix:///var/run/docker.sock"
+  file:
+    # watch for dynamic configuration changes
+    directory: /etc/traefik
+    watch: true

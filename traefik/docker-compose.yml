@@ -1,0 +1,78 @@
+# Traefik docs basic compose example: https://doc.traefik.io/traefik/user-guides/docker-compose/basic-example/true
+# Traefik docs examples: https://doc.traefik.io/traefik/v1.7/user-guide/examples/
+# Traefik examples: https://github.com/DoTheEvo/Traefik-v2-examples#2-traefik-routing-to-a-local-IP-addresses
+# Christian lempa traefik yml: https://github.com/ChristianLempa/boilerplates/blob/main/docker-compose/traefik/config/traefik.yml
+# Technotim blog post: https://docs.technotim.live/posts/traefik-portainer-ssl/
+# Technotim video: https://www.youtube.com/watch?v=liV3c9m_OX8 
+# Password hash to dashboard auth  done with command echo $(htpasswd -nB USERNAMEHERE) | sed -e s/\\$/\\$\\$/g
+version: "3"
+
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: "traefik"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    env_file:
+      - /Path/To/traefik/traefik.env # Load cloudflare auth info
+    networks:
+      - Proxy
+    ports: #host:container
+      - "80:80" # HTTP entrypoint
+      - "443:443" # HTTPS Entrypoint
+#      - "8080:8080" # Dashboard
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Passtrhough local system time config as read only
+      - /var/run/docker.sock:/var/run/docker.sock # Mandatory
+      - /Path/To/traefik/data/traefik.yml:/etc/traefik/traefik.yml:ro # Custom configs location
+      - /Path/To/traefik/data/config.yml:/etc/traefik/config.yml:ro # Custom configs location
+      - /Path/To/traefik/data/ssl:/etc/traefik/ssl # Custom certificate location
+      - /Path/To/traefik/data/logs:/var/log # Custom log location
+    labels:
+      - "traefik.enable=true" # Explicitly tell Traefik to be enabled on this container
+      - "traefik.http.routers.traefik.entrypoints=http" # Allow request entrypoint "http"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.local.yourDomain.com`)" # Dashboard
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=USERNAME:PASSWORDHASH" # Auth for dashboard
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.local.yourDomain.com`)" #Dashboard
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare" #cer resolver @ traefik.yml
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.yourDomain.com"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.yourDomain.com"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+
+#*****************
+#SIMPLIFIED LABELS
+#*****************
+#    labels:
+#      - "traefik.enable=true" # Explicitly tell Traefik to be enabled on this container
+#      - "traefik.http.routers.traefik.rule=Host(`traefik.yourmachinehostname`)" # Domain the service will respond to
+#      - "traefik.http.routers.traefik.entrypoints=http" # Allow request entrypoint "http"
+#      - "traefik.http.services.traefik.loadbalancer.server.port=8080" # Dashboard port
+#      - "traefik.docker.network=Proxy"
+
+
+# DEBUG CONTAINER
+#
+#  whoami:
+#    image: "traefik/whoami"
+#    container_name: "simple-service"
+#    networks:
+#      - Proxy
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.whoami.rule=Host(`whoami.yourmachinehostname`)"
+#      - "traefik.http.routers.whoami.entrypoints=web"
+
+volumes:
+  traefik:
+
+networks:
+  Proxy:
+    name: "Proxy"
+    external: true

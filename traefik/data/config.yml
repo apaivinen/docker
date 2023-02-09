@@ -1,0 +1,12 @@
+http:
+#region routers
+  routers:
+#endregion routers
+
+#region services
+  services:
+#endregion services
+
+#region middlewares
+  middlewares:
+#endregion middlewares
