@@ -12,6 +12,6 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro                        # Timezone
       - /var/run/docker.sock:/var/run/docker.sock:ro          # Docker
-      - /datalevy/watchtower/data/config.json:/config.json    # Config file
+      - /PathTo/watchtower/data/config.json:/config.json      # Config file
     env_file:
-      - /datalevy/watchtower/watchtower.env
+      - /PathTo/watchtower/watchtower.env
