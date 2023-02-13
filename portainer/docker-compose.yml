@@ -1,0 +1,16 @@
+version: '3'
+#documentation https://docs.portainer.io/v/ce-2.9/start/install/server/docker/linux
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Passthrough host system time as readonly
+      - /var/run/docker.sock:/var/run/docker.sock:ro #passthrough docker access as readonly
+      - /PathTo/portainer/portainer-data:/data #mount local portainer data to container data-folder
+    ports:
+      - 9000:9000
+      - 8000:8000

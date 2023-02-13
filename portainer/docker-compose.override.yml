@@ -1,0 +1,32 @@
+version: '3'
+services:
+  portainer:
+    networks:
+      - Proxy
+    labels:
+# Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+
+# Traefik
+      - "traefik.enable=true" #Explicitly tell Traefik to expose this container
+      - "traefik.docker.network=Proxy"
+# Routers HTTP
+      - "traefik.http.routers.portainer.entrypoints=http" # Allow request from http
+      - "traefik.http.routers.portainer.rule=Host(`portainer.local.yourDomain.com`)" # The domain the service will respond to
+      - "traefik.http.routers.portainer.middlewares=portainer-https-redirect"
+
+# Routers HTTPS
+      - "traefik.http.routers.portainer-secure.entrypoints=https"
+      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.local.yourDomain.com`)"
+      - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.portainer-secure.tls=true"
+      - "traefik.http.routers.portainer-secure.service=portainer"
+
+# Service Definitions
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+
+# additional Middleware definitions
+
+networks:
+  Proxy:
+   external: true
