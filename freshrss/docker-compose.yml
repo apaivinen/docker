@@ -26,21 +26,3 @@ services:
     environment:
       TZ: Europe/Helsinki
       CRON_MIN: '3,33'
-    networks:
-      - Proxy #Traefik network
-    labels:
-      - "traefik.enable=true" #Explicitly tell Traefik to expose this container
-      - "traefik.http.routers.rss.entrypoints=http" # Allow request from http
-      - "traefik.http.routers.rss.rule=Host(`rss.local.yourDomain.com`)" # The domain the service will respond to
-      - "traefik.http.middlewares.rss-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.rss.middlewares=rss-https-redirect"
-      - "traefik.http.routers.rss-secure.entrypoints=https"
-      - "traefik.http.routers.rss-secure.rule=Host(`rss.local.yourDomain.com`)"
-      - "traefik.http.routers.rss-secure.tls=true"
-      - "traefik.http.routers.rss-secure.service=rss"
-      - "traefik.http.services.rss.loadbalancer.server.port=80"
-      - "traefik.docker.network=Proxy"
-
-networks:
-  Proxy:
-    external: true
