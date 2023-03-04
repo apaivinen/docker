@@ -1,0 +1,9 @@
+version: '3'
+services:
+  cyberchef:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: CyberChef
+    ports:
+      - 80:80
