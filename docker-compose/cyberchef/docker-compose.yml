@@ -1,0 +1,13 @@
+version: '3'
+services:
+  cyberchef:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: CyberChef
+    hostname: CyberChef
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    #ports:
+    #  - 80:80

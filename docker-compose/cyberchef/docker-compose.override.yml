@@ -1,0 +1,22 @@
+version: "2.4"
+services:
+  cyberchef:
+    networks:
+      - Proxy #Traefik network
+    labels:
+# Traefik
+      - "traefik.enable=true" #Explicitly tell Traefik to expose this container
+      - "traefik.http.routers.cyberchef.entrypoints=http" # Allow request from http
+      - "traefik.http.routers.cyberchef.rule=Host(`cyberchef.local.yourDomain.com`)" # The domain the service will respond to
+      - "traefik.http.middlewares.cyberchef-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.cyberchef.middlewares=cyberchef-https-redirect"
+      - "traefik.http.routers.cyberchef-secure.entrypoints=https"
+      - "traefik.http.routers.cyberchef-secure.rule=Host(`cyberchef.local.yourDomain.com`)"
+      - "traefik.http.routers.cyberchef-secure.tls=true"
+      - "traefik.http.routers.cyberchef-secure.service=cyberchef"
+      - "traefik.http.services.cyberchef.loadbalancer.server.port=80"
+      - "traefik.docker.network=Proxy"
+
+networks:
+  Proxy:
+    external: true
