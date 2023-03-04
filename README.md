@@ -1,6 +1,6 @@
-# Docker Compose templates
+# Docker templates
 
-This repository contains my personal docker compose collection with examples of environment files & other necessary files (if applied).
+This repository contains my personal docker collection with examples of environment files & other necessary files (if applied).
 
 I'm trying to include necassary resources to every docker-compose files.
 
