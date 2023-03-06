@@ -17,9 +17,9 @@ File structure should be following:
 `Dockerfile` is a which CyberChef image is based on
 
 # Container (dockerfile) explanation
-Build process is divided to two parts
-    1. build
-    2. main
+Build process is divided to two parts  
+    1. build  
+    2. main  
 
 ## Build
 
