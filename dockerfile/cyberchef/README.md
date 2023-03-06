@@ -14,7 +14,7 @@ File structure should be following:
 └── README.md
 ```
 `docker-compose.yml` contains build & run configurations  
-`Dockerfile` is a which CyberChef image is based on
+`Dockerfile` is a build file for CyberChef container
 
 # Container (dockerfile) explanation
 Build process is divided to two parts  
