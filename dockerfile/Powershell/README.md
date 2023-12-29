@@ -1,14 +1,15 @@
 # Powershell container
 
+keep your local powershell session clean!
+
 contains following files:
 - Dockerfile
-
-keep your local powershell session clean!
 
 Build command
 
 ```powershell
 docker build -t apa/powershell:latest .
+docker build -t powershell .
 ```
 
 Run command
