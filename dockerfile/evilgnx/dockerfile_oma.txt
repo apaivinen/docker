@@ -1,0 +1,15 @@
+FROM alpine:edge
+
+RUN apk update
+RUN apk --update add git make gcc musl-dev go
+RUN mkdir /go
+RUN cd /go
+RUN git clone https://github.com/kgretzky/evilginx2.git
+RUN cd evilginx2 \
+    && make
+
+ADD . /go/
+
+RUN ./bin/evilginx2 -p /go/evilginx2/phishlets/
+
+CMD [ "tail", "-F", "-n0", "/etc/hosts"  ]
